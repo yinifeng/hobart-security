@@ -1,0 +1,55 @@
+OAuth2.0提供几种模式
+1、授权码模式(authorization_code)
+  类似第三方微信登录
+  a、资源拥有者打开客户端，客户端要求资源拥有者给与授权，它将浏览器被重定向到授权服务器，
+    重定向是会附加客户端身份信息（授权），如：
+    这个请求是Get请求，没有授权会跳到登录页面
+    /uaa/oauth/authorize?client_id=c1&response_type=code&scope=all&redirect_uri=http://www.baidu.com
+    参数列表如下：
+    client_id:客户端准入标识
+    response_type:授权码模式固定为code
+    scope:客户端权限
+    redirect_uri:跳转uri，当授权码成功后会跳转此地址，并在后边带上code参数(授权码)
+  b、浏览器出现向授权服务器授权页面，之后将用户同意授权
+  c、授权服务器将授权码（AuthorizationCode）转经浏览器发送给client（通过redirect_uri）
+  d、客户端拿着授权码向授权服务器索要访问access_token(就是申请令牌),请如下：
+    这个请求是post请求申请令牌
+    /uaa/oauth/token?client_id=c1&client_secret=secret&grant_type=authorization_code&code=授权返回的码&redirect_uri=http://www.baidu.com
+    参数列表如下：
+    client_id:客户端准入标识
+    client_secret:客户端秘钥
+    grant_type:授权类型，填写authorization_code，表示授权模式
+    code:授权码，就是上一步获取的授权码，注意：授权码只使用一次就无效，需要重新申请
+    redirect_uri:跳转uri，当授权码成功后会跳转此地址，并在后边带上code参数(授权码)
+  e、授权服务器返回令牌（access_token）
+  总结：这种模式是四种模式最安全的一种模式。一般用于client是web服务器端应用或第三方的原生App调用资源服务的时候，
+    因为这种模式access_token不会经过浏览器或移动端的App，而是直接从服务端去交换，这样就最大限度的减少了令牌泄露的风险
+2、简化模式(implicit)
+  a、资源拥有者打开客户端，客户端要求资源拥有者给与授权，它将浏览器被重定向到授权服务器，
+     重定向是会附加客户端身份信息（授权），如
+    这个请求是Get请求，没有授权会跳到登录页面
+    /uaa/oauth/authorize?client_id=c1&response_type=token&scope=all&redirect_uri=http://www.baidu.com
+    
+  总结：一般来说，简化模式用于没有服务器端的第三方单页应用，因为没有服务器端就无法接收授权码
+3、密码模式(password)
+  a、客户端拿着授权码向授权服务器索要访问access_token(就是申请令牌),请如下：
+    这个请求是post请求申请令牌
+    /uaa/oauth/token?client_id=c1&client_secret=secret&grant_type=password&username=zhangsan&password=123
+    参数列表如下：
+    client_id:客户端准入标识
+    client_secret:客户端秘钥
+    grant_type:授权类型，password，表示密码模式
+    username:登录用户名
+    password:登录密码
+  总结：这种模式十分简单，确会把用户敏感信息泄露给client，因此这种模式只能用于client是我们自己开发的情况。
+  因此密码模式一般用于我们自己开发的，第一方原生App或第一方单页面应用  
+4、客户端模式(client_credentials)
+  a、客户端拿着授权码向授权服务器索要访问access_token(就是申请令牌),请如下：
+    这个请求是post请求申请令牌
+    /uaa/oauth/token?client_id=c1&client_secret=secret&grant_type=client_credentials
+    参数列表如下：
+    client_id:客户端准入标识
+    client_secret:客户端秘钥
+    grant_type:授权类型，client_credentials，表示客户端模式
+  总结：这种模式是最方便当最不安全模式，因此这就要求我们对client完全的信任，而client本身也是安全的。
+  因此这种模式一般用来提供给我们完全信任的服务器端服务。比如，合作方系统对接，拉取一组用户信息
