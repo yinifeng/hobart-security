@@ -15,9 +15,10 @@ public class HobartWebSecurityConfigure extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().and().csrf().disable()
-                .formLogin().and()
+                .formLogin().defaultSuccessUrl("/index.html")
+                .and()
                 .authorizeRequests()
-                .antMatchers("/index.html").anonymous()
+                .antMatchers("/index.html").permitAll()
                 .anyRequest().authenticated()
         ;
     }
@@ -35,7 +36,7 @@ public class HobartWebSecurityConfigure extends WebSecurityConfigurerAdapter {
     @Override
     public void configure(WebSecurity web) throws Exception {
         web.ignoring()
-                .antMatchers("/static/**","/resources/**", "/public/**");
+                .antMatchers("/static/**","/asserts/**","/webjars/**","/resources/**", "/public/**");
     }
 
     @Bean
