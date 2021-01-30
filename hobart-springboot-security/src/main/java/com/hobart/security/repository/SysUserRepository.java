@@ -4,4 +4,6 @@ import com.hobart.security.entity.SysUser;
 import org.springframework.data.jpa.repository.support.JpaRepositoryImplementation;
 
 public interface SysUserRepository extends JpaRepositoryImplementation<SysUser,Long> {
+    
+    SysUser findByLoginName(String loginName);
 }

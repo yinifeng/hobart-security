@@ -15,10 +15,10 @@ VALUES
 
 INSERT INTO `t_hobart_sys_user` (`login_name`, `user_name`, `password`, `org_id`, `address`, `phone`, `email`)
 VALUES
-('admin', '系统管理员', '123456', '1', '', '','');
+('admin', '系统管理员', '$2a$10$JYCC5c533Jh/qUm6/8G8XucJ0Ln7.IP.fNatrkQWidV948C2s6LiW', '1', '', '','');
 INSERT INTO `t_hobart_sys_user` (`login_name`, `user_name`, `password`, `org_id`, `address`, `phone`, `email`)
 VALUES
-('zhangsan', '张三', '123456', '4', '深圳宝安', '15000011166','123@qq.com');
+('zhangsan', '张三', '$2a$10$JYCC5c533Jh/qUm6/8G8XucJ0Ln7.IP.fNatrkQWidV948C2s6LiW', '4', '深圳宝安', '15000011166','123@qq.com');
 
 
 
@@ -27,10 +27,10 @@ VALUES
 ('0', '', '0', '系统管理', '', '1','1');
 INSERT INTO `t_hobart_sys_menu` (`menu_pid`, `menu_pids`, `is_leaf`, `menu_name`, `menu_url`, `sort_id`, `level`)
 VALUES
-('1', '1', '1', '用户管理', '/sys_user', '1','2');
+('1', '1', '1', '用户管理', '/sysuser', '1','2');
 INSERT INTO `t_hobart_sys_menu` (`menu_pid`, `menu_pids`, `is_leaf`, `menu_name`, `menu_url`, `sort_id`, `level`)
 VALUES
-('1', '1', '1', '日志管理', '/sys_log', '2','2');
+('1', '1', '1', '日志管理', '/syslog', '2','2');
 INSERT INTO `t_hobart_sys_menu` (`menu_pid`, `menu_pids`, `is_leaf`, `menu_name`, `menu_url`, `sort_id`, `level`)
 VALUES
 ('1', '1', '1', '业务一', '/biz1', '3','2');
@@ -46,13 +46,24 @@ INSERT INTO `t_hobart_sys_role` (`role_name`, `role_desc`, `role_code`, `sort_id
 VALUES
 ('普通用户', '普通用户', 'common', '2');
 
-
+INSERT INTO `t_hobart_sys_role_menu` (`role_id`, `menu_id`)
+VALUES
+('1', '1');
 INSERT INTO `t_hobart_sys_role_menu` (`role_id`, `menu_id`)
 VALUES
 ('1', '2');
 INSERT INTO `t_hobart_sys_role_menu` (`role_id`, `menu_id`)
 VALUES
 ('1', '3');
+INSERT INTO `t_hobart_sys_role_menu` (`role_id`, `menu_id`)
+VALUES
+('1', '4');
+INSERT INTO `t_hobart_sys_role_menu` (`role_id`, `menu_id`)
+VALUES
+('1', '5');
+INSERT INTO `t_hobart_sys_role_menu` (`role_id`, `menu_id`)
+VALUES
+('2', '1');
 INSERT INTO `t_hobart_sys_role_menu` (`role_id`, `menu_id`)
 VALUES
 ('2', '4');
