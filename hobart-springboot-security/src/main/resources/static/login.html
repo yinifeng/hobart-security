@@ -24,18 +24,70 @@
     <div>
         <h1>Hobart业务系统登录</h1>
         <form method="post" action="/login">
-            <span>用户名称</span><input type="text" name="username" /><br/>
-            <span>用户密码</span><input type="password" name="password" /><br/>
-            <input type="submit" value="登录" />
+            <span>用户名称</span><input type="text" name="username" id="username" /><br/>
+            <span>用户密码</span><input type="password" name="password" id="password" /><br/>
+            <!--<input type="submit" value="登录" />-->
+            <!--<input type="button" onclick="login()" value="登录" id="login-btn" />-->
+            <input type="button" value="登录" id="login-btn" />
+            <label><input type="checkbox" name="remember-me" id="remember-me"/>记住密码</label>
         </form>
     </div>
     
     <script src="/webjars/jquery/3.0.0/jquery.js" type="text/javascript"></script>
 
     <script type="text/javascript">
-        $(function() {
-            console.log("登录...")
-        })
+        $(function () {
+            //为登录按钮绑定click事件
+            $("#login-btn").click(function () {
+                //执行登录函数
+                login();
+            });
+
+            /**
+             * 登录函数
+             */
+            function login() {
+                //获取登录名和密码
+                var username = $("#username").val();
+                var password = $("#password").val();
+                //复选框获取
+                var rememberMe = $("#remember-me").is(":checked");
+                if (username === "" || password === "") {
+                    console.log("用户名或密码不能为空");
+                    alert("用户名或密码不能为空");
+                    return;
+                }
+                $.ajax({
+                    type: "POST",
+                    url: "/login",
+                    data: {
+                        "username": username,
+                        "password": password,
+                        //spring-security默认是remember-me
+                        "remember-me": rememberMe
+                    },
+                    //cache: !1,
+                    //timeout: 3e4,
+                    //dataType: "json",
+                    //beforeSend:function(){$("#msg").html("正在登录...");},
+                    success: function (json) {
+                        //json是个重定向的首页html5页面
+                        console.log("登录成功" + decodeURI(json));
+                        //if (json.isok){
+                        //    location.href = json.data;
+                        //}else{
+                        //    alert(json.message);
+                        //}
+                        //重定向到首页
+                        window.location.href = "/";
+                    },
+                    error: function (data) {
+                        alert("登录出现服务器异常");
+                        console.log("登录失败"+ decodeURI(data));
+                    }
+                });
+            }
+        });
     </script>
 </body>
 

@@ -1,5 +1,6 @@
 package com.hobart.security.configure;
 
+import com.hobart.security.auth.MyLogoutSuccessHandler;
 import com.hobart.security.auth.MySessionInformationExpiredStrategy;
 import com.hobart.security.service.MyUserDetailsService;
 import org.springframework.context.annotation.Bean;
@@ -12,8 +13,14 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
+import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
+import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 import sun.net.www.content.image.gif;
 import sun.net.www.content.image.png;
+
+import javax.annotation.Resource;
+import javax.sql.DataSource;
 
 @Configuration
 /**
@@ -23,10 +30,25 @@ import sun.net.www.content.image.png;
  */
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class HobartWebSecurityConfigure extends WebSecurityConfigurerAdapter {
+    @Resource
+    private DataSource dataSource;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.csrf().disable()
+        //logout 会自动删除session，SecurityContext，rememberme的信息
+        http.logout()
+                .logoutUrl("/logout")//处理登出的路劲默认为logout
+                //.logoutSuccessUrl()//登出跳转的页面
+                .deleteCookies("JSESSIONID")//删除cookie对应的key
+                .logoutSuccessHandler(myLogoutSuccessHandler())//自定义接口处理登出逻辑
+        //开启remember-me功能 就是登录了会保存到cookie，下次有效期内访问无需登录，除非服务器重启        
+        .and().rememberMe()
+                //remember-me请求参数默认是remember-me
+                .rememberMeParameter("remember-me")
+                .rememberMeCookieName("my-remember-me-cookie-key")
+                .tokenValiditySeconds(2*24*60*60)//2天有效
+                .tokenRepository(persistentTokenRepository())//cookie持久化数据库配置
+        .and().csrf().disable()
                 .formLogin() //开启form登录认证
                 .loginPage("/login.html")//登录处理页面
                 .loginProcessingUrl("/login")//登录请求路劲
@@ -77,7 +99,7 @@ public class HobartWebSecurityConfigure extends WebSecurityConfigurerAdapter {
 
     @Override
     public void configure(WebSecurity web) throws Exception {
-        //将项目中的静态资源开发出来，不需要权限访问
+        //将项目中的静态资源开方出来，不需要权限访问
         //这样配置不要经过filter验证，上面permitAll()会经过filter校验
         web.ignoring()
                 .antMatchers("/static/**","/asserts/**","/webjars/**",
@@ -94,5 +116,20 @@ public class HobartWebSecurityConfigure extends WebSecurityConfigurerAdapter {
     @Bean
     public MyUserDetailsService myUserDetailsService(){
         return new MyUserDetailsService();
+    }
+
+    /**
+     * remember登录信息持久化，服务重启也可以记住，默认是存在内存中的
+     */
+    @Bean
+    public PersistentTokenRepository persistentTokenRepository(){
+        JdbcTokenRepositoryImpl jdbcTokenRepository = new JdbcTokenRepositoryImpl();
+        jdbcTokenRepository.setDataSource(dataSource);
+        return jdbcTokenRepository;
+    }
+    
+    @Bean
+    public LogoutSuccessHandler myLogoutSuccessHandler(){
+        return new MyLogoutSuccessHandler();
     }
 }

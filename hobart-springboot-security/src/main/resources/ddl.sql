@@ -138,6 +138,19 @@ CREATE TABLE `t_hobart_sys_user_role` (
   KEY `idx_role_id` (`role_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户角色关系表';
 
+
+DROP TABLE IF EXISTS `persistent_logins`;
+
+#-------JdbcTokenRepositoryImpl存储的表
+CREATE TABLE `persistent_logins` (
+  `series` varchar(64) NOT NULL DEFAULT '' COMMENT '登录的remebeme的cookie',
+  `username` varchar(64) NOT NULL DEFAULT '' COMMENT '登录名',
+  `token` varchar(64) NOT NULL DEFAULT '' COMMENT '令牌',
+  `last_used` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '最后登录时间',
+  PRIMARY KEY (`series`),
+  KEY `idx_user_name` (`username`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='持久化用户登录信息';
+
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
